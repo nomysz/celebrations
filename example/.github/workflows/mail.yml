@@ -1,0 +1,14 @@
+name: Run
+
+on:
+  schedule:
+    - cron: "30 9 * * *"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Run
+        run: ./celebrations
