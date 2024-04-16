@@ -75,7 +75,13 @@ func SlackAnniversaryChannelHandler(p Person, c *Config) {
 	)
 
 	if err != nil {
-		log.Println("Error when posting anniversary message", err)
+		log.Println(
+			fmt.Sprintf(
+				"Error when posting anniversary message to channel (%s): %s",
+				c.Slack.AnniversaryChannelReminder.ChannelName,
+				err,
+			),
+		)
 		return
 	}
 
@@ -93,7 +99,13 @@ func SlackBirthdayReminderChannelHandler(p Person, c *Config) {
 	)
 
 	if err != nil {
-		log.Println("Error when posting birthday reminder message to channel", err)
+		log.Println(
+			fmt.Sprintf(
+				"Error when posting birthday reminder message to channel (%s): %s",
+				c.Slack.BirthdaysChannelReminder.ChannelName,
+				err,
+			),
+		)
 		return
 	}
 
@@ -111,7 +123,13 @@ func SlackBirthdayReminderDirectMessageHandler(p Person, c *Config) {
 	)
 
 	if err != nil {
-		log.Println("Error when opening Slack conversation with lead", err)
+		log.Println(
+			fmt.Sprintf(
+				"Error when opening Slack conversation with lead (%s): %s",
+				*p.LeadSlackMemberID,
+				err,
+			),
+		)
 	}
 
 	_, _, err = api.PostMessage(
@@ -123,7 +141,13 @@ func SlackBirthdayReminderDirectMessageHandler(p Person, c *Config) {
 	)
 
 	if err != nil {
-		log.Println("Error when sending birthday reminder Slack DM to lead", err)
+		log.Println(
+			fmt.Sprintf(
+				"Error when sending birthday reminder Slack DM to lead (%s): %s",
+				*p.LeadSlackMemberID,
+				err,
+			),
+		)
 		return
 	}
 
@@ -141,7 +165,13 @@ func SlackBirthdayPersonalReminderHandler(p Person, c *Config) {
 		c.Slack.BirthdaysPersonalReminder.Time,
 	)
 	if err != nil {
-		log.Println("There was an error when posting Slack reminder", err)
+		log.Println(
+			fmt.Sprintf(
+				"Error when posting Slack reminder to lead (%s): %s",
+				*p.LeadSlackMemberID,
+				err,
+			),
+		)
 		return
 	}
 
