@@ -73,7 +73,7 @@ func SlackAnniversaryChannelHandler(e Event, c *Config) {
 		anniversaryWishes,
 		c,
 	); err != nil {
-		log.Println(fmt.Sprintf("Error when posting anniversary reminder: %s", err))
+		log.Println("Error when posting anniversary reminder:", err)
 		return
 	}
 	log.Println("Sent anniversary info to channel for person", e.Person.SlackMemberID)
@@ -85,20 +85,39 @@ func SlackBirthdayReminderChannelHandler(e Event, c *Config) {
 		fmt.Sprintf(c.Slack.BirthdaysChannelReminder.MessageTemplate, e.Person.SlackMemberID),
 		c,
 	); err != nil {
-		log.Println(fmt.Sprintf("Error when posting birthday reminder: %s", err))
+		log.Println("Error when posting birthday reminder:", err)
 		return
 	}
 	log.Println("Sent birthday reminder to channel", e.Person.SlackMemberID)
 }
 
 func SlackBirthdayReminderDirectMessageHandler(e Event, c *Config) {
-	if err := SendSlackDM(
-		*e.Person.LeadSlackMemberID,
-		fmt.Sprintf(c.Slack.BirthdaysDirectMessageReminder.MessageTemplate, e.Person.SlackMemberID),
-		c,
-	); err != nil {
-		log.Println(fmt.Sprintf("Error when sending DM remidner: %s", err))
+	var msg string
+	switch e.EventType {
+	case Birthday:
+		msg = fmt.Sprintf(
+			c.Slack.BirthdaysDirectMessageReminder.MessageTemplate,
+			e.Person.SlackMemberID,
+		)
+	case UpcomingBirthday:
+		msg = fmt.Sprintf(
+			c.Slack.BirthdaysDirectMessageReminder.PreRemidnerMessageTemplate,
+			e.Person.SlackMemberID,
+		)
+	default:
+		log.Println("Error when sending DM remidner: Invalid EventType:", e.EventType)
 		return
+	}
+
+	if err := SendSlackDM(*e.Person.LeadSlackMemberID, msg, c); err != nil {
+		log.Println("Error when sending DM remidner:", err)
+		return
+	}
+	for _, slack_member_id := range c.Slack.BirthdaysDirectMessageReminder.AlwaysNotifySlackIds {
+		if err := SendSlackDM(slack_member_id, msg, c); err != nil {
+			log.Println("Error when sending DM remidner:", err)
+			return
+		}
 	}
 	log.Println("Sent birthday reminder Slack DM to lead", e.Person.SlackMemberID)
 }
@@ -113,7 +132,7 @@ func SlackBirthdayPersonalReminderHandler(e Event, c *Config) {
 		fmt.Sprintf(c.Slack.BirthdaysPersonalReminder.MessageTemplate, e.Person.SlackMemberID),
 		c,
 	); err != nil {
-		log.Println(fmt.Sprintf("Error when posting Slack reminder: %s", err))
+		log.Println("Error when posting Slack reminder:", err)
 		return
 	}
 	log.Println("Set birthday Slack reminder for lead", *e.Person.LeadSlackMemberID)

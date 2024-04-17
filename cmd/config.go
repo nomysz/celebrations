@@ -40,10 +40,11 @@ type BirthdaysPersonalReminder struct {
 }
 
 type BirthdaysDirectMessageReminder struct {
-	Enabled                    bool   `mapstructure:"enabled" validate:"required"`
-	MessageTemplate            string `mapstructure:"message_template" validate:"required"`
-	PreReminderDaysBefore      int64  `mapstructure:"pre_reminder_days_before" validate:"required"`
-	PreRemidnerMessageTemplate string `mapstructure:"pre_remidner_message_template" validate:"required"`
+	Enabled                    bool     `mapstructure:"enabled" validate:"required"`
+	MessageTemplate            string   `mapstructure:"message_template" validate:"required"`
+	PreReminderDaysBefore      int64    `mapstructure:"pre_reminder_days_before" validate:"required"`
+	PreRemidnerMessageTemplate string   `mapstructure:"pre_remidner_message_template" validate:"required"`
+	AlwaysNotifySlackIds       []string `mapstructure:"always_notify_slack_ids" validate:"required"`
 }
 
 type Slack struct {
