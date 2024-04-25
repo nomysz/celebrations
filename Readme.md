@@ -32,10 +32,9 @@ Celebrations works based on birth date and anniversary dates along with Slack id
    - user token scopes:
      - `reminders:write` (adding reminders)
 
-1. To post on private channel invite bot to channel (Integrations -> Add App).
-1. Optional.
-   Use command `./celebrations download-users [--limit x]` to pre-download users from **Slack**. Can be helpful when populating `config.yml` file with people.
-1. Schedule running `./celebrations send-reminders` exacutable once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml).
+1. To post on private channel invite bot to channel (**Channel** -> **Integrations** -> **Add App**).
+1. Optional. Use command `./celebrations download-users [--limit x]` to pre-download users from **Slack**. Helpful for populating `config.yml` file.
+1. Schedule running `./celebrations send-reminders` once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml) or other type of cron.
 
 ## Development
 
