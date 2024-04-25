@@ -25,8 +25,9 @@ var rootCmd = &cobra.Command{
 func init() {
 	cobra.OnInitialize(config.InitConfig)
 	rootCmd.Root().CompletionOptions.DisableDefaultCmd = true
-	rootCmd.AddCommand(download_users)
+	rootCmd.AddCommand(DownloadUsers)
 	rootCmd.AddCommand(SendRemindersCmd)
+	rootCmd.AddCommand(VersionCmd)
 }
 
 func Execute() {

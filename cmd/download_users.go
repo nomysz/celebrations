@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	filename       = "people.yml"
-	limit          int
-	download_users = &cobra.Command{
+	filename      = "people.yml"
+	limit         int
+	DownloadUsers = &cobra.Command{
 		Use:   "download-users",
 		Short: fmt.Sprintf("Download users from Slack"),
 		Long:  fmt.Sprintf("Get users from Slack and save as `%s` (filters out users marked as bots and deleted users).", filename),
@@ -23,7 +23,7 @@ var (
 )
 
 func init() {
-	download_users.Flags().IntVarP(&limit, "limit", "l", 1000, "Limit the number of users being downloaded")
+	DownloadUsers.Flags().IntVarP(&limit, "limit", "l", 1000, "Limit the number of users being downloaded")
 }
 
 type SlackUser struct {
