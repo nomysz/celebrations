@@ -15,18 +15,24 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 1. Required **Slack** permissions:
 
    - bot token scopes:
-     - `chat:write`
-     - `chat:write.customize`
+
+     - `chat:write` (posting to channels)
      - `chat:write.public`
-     - `users.profile:read`
-     - `users:read`
-     - `channels:manage`
+
+     - `channels:manage` (sending DMs)
      - `groups:write`
      - `im:write`
      - `mpim:write`
-   - user token scopes:
-     - `reminders:write`
 
+     - `chat:write.customize` (customizing app visibility)
+
+     - `users:read` (downloading users)
+     - `users.profile:read`
+
+   - user token scopes:
+     - `reminders:write` (adding reminders)
+
+1. To post on private channel invite bot to channel (Integrations -> Add App).
 1. Optional.
    Use command `./celebrations download-users [--limit x]` to pre-download users from **Slack**. Can be helpful when populating `config.yml` file with people.
 1. Schedule running `./celebrations send-reminders` exacutable once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml).
