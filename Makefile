@@ -2,7 +2,7 @@ run:
 	go run main.go
 
 test:
-	go test
+	go test ./...
 
 build-macos-arm64:
 	GOOS=darwin GOARCH=arm64 go build -o bin/celebrations-macos-arm64 main.go

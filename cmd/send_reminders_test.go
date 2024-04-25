@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nomysz/celebrations/cmd"
 	"github.com/nomysz/celebrations/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -81,9 +80,9 @@ func TestSendReminders(t *testing.T) {
 
 	messages := []string{}
 
-	cmd.SendReminders(
+	SendReminders(
 		getTestConfig(),
-		cmd.SlackClient{
+		SlackClient{
 			SlackChannelMsgSender: func(channel string, msg string, botToken string) error {
 				messages = append(
 					messages,
