@@ -6,7 +6,7 @@ Facilitates celebrations by sending reminders via custimizable channels like:
 - Slack personal reminders,
 - Slack channels.
 
-Celebrations works based on birth date and anniversary dates along with Slack identifiers.
+Celebrations works based on birth date and anniversary dates along with Slack identifiers (see [example/config.yml](example/config.yml)).
 
 ## Installation
 
@@ -29,26 +29,28 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 
 1. Optional.
    Use command `./celebrations download-users [--limit x]` to pre-download users from **Slack**. Can be helpful when populating `config.yml` file with people.
-1. Schedule running `./celebrations-...` exacutable once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml).
+1. Schedule running `./celebrations send-reminders` exacutable once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml).
 
 ## Development
 
-- Run
+### Run
 
-`make run`
+```bash
+make run
+```
 
-- Build
+### Build
 
-`make all`
+```bash
+make all
+```
 
-- Test
+### Test
 
-`make test`
+```bash
+make test
+```
 
 ## License
 
 [MIT](LICENSE)
-
-## Todo
-
-- verify validation of required fields

@@ -13,8 +13,8 @@ import (
 
 var SendRemindersCmd = &cobra.Command{
 	Use:   "send-reminders",
-	Short: "Sending remidners using available handlers",
-	Long:  "Sending remidners using available handlers",
+	Short: "Send remidners via configured handlers",
+	Long:  "Send remidners via configured handlers",
 	Run: func(cmd *cobra.Command, args []string) {
 		SendReminders(
 			config.GetConfig(),

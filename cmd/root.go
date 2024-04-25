@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/nomysz/celebrations/config"
@@ -12,8 +11,15 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "celebrations",
 	Short: "Celebrate your company birthdays and anniversaries",
-	Long:  "Celebrartions is a set of tools that will help you manage your company birthdays and anniversaries",
-	Run:   func(cmd *cobra.Command, args []string) { log.Fatalln("Command not specified") },
+	Long:  "Set of tools facilitating company anniversaries and birthdays",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			cmd.Help()
+			os.Exit(0)
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 func init() {
