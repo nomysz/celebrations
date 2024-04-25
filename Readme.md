@@ -41,6 +41,10 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 
 `make all`
 
+- Test
+
+`make test`
+
 ## License
 
 [MIT](LICENSE)
@@ -48,4 +52,3 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 ## Todo
 
 - verify validation of required fields
-- test

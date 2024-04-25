@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/nomysz/celebrations/config"
 	"github.com/slack-go/slack"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -34,7 +35,7 @@ type SlackUser struct {
 }
 
 func downloadUserFromSlack() {
-	c := getConfig()
+	c := config.GetConfig()
 
 	api := slack.New(c.Slack.BotToken)
 

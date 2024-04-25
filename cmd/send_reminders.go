@@ -6,19 +6,38 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nomysz/celebrations/config"
+	"github.com/nomysz/celebrations/slack"
 	"github.com/spf13/cobra"
 )
 
-var send_reminders = &cobra.Command{
+var SendRemindersCmd = &cobra.Command{
 	Use:   "send-reminders",
 	Short: "Sending remidners using available handlers",
 	Long:  "Sending remidners using available handlers",
-	Run:   func(cmd *cobra.Command, args []string) { sendReminders() },
+	Run: func(cmd *cobra.Command, args []string) {
+		SendReminders(
+			config.GetConfig(),
+			SlackClient{
+				SlackChannelMsgSender:       slack.SendSlackChannelMsg,
+				SlackDMSender:               slack.SendSlackDM,
+				SlackPersonalReminderSetter: slack.SetSlackPersonalReminder,
+			},
+		)
+	},
 }
 
-func sendReminders() {
-	c := getConfig()
+type SlackChannelMsgSender func(channel string, msg string, botToken string) error
+type SlackDMSender func(slackId string, msg string, botToken string) error
+type SlackPersonalReminderSetter func(slackId string, time string, msg string, userToken string) error
 
+type SlackClient struct {
+	SlackChannelMsgSender
+	SlackDMSender
+	SlackPersonalReminderSetter
+}
+
+func SendReminders(c *config.Config, sc SlackClient) {
 	log.Println(len(c.People), "people found in config.")
 
 	todaysEventsCh := make(chan Event)
@@ -39,7 +58,7 @@ func sendReminders() {
 		for event_type, handlers := range GetAnniversaryHandlers(c) {
 			if event.EventType == event_type {
 				for _, handler := range handlers {
-					handler(event, c)
+					handler(event, c, sc)
 				}
 			}
 		}
@@ -55,23 +74,23 @@ const (
 )
 
 type Event struct {
-	Person    Person
+	Person    config.Person
 	EventType EventType
 }
 
-type EventHandler func(Event, *Config)
+type EventHandler func(Event, *config.Config, SlackClient)
 
-func SlackAnniversaryChannelHandler(e Event, c *Config) {
+func SlackAnniversaryChannelHandler(e Event, c *config.Config, sc SlackClient) {
 	yearsInCompany := time.Now().Year() - e.Person.JoinDate.Year()
 	anniversaryWishes := fmt.Sprintf(
 		c.Slack.AnniversaryChannelReminder.MessageTemplate,
 		e.Person.SlackMemberID,
 		yearsInCompany,
 	)
-	if err := SendSlackChannelMsg(
+	if err := sc.SlackChannelMsgSender(
 		c.Slack.AnniversaryChannelReminder.ChannelName,
 		anniversaryWishes,
-		c,
+		c.Slack.BotToken,
 	); err != nil {
 		log.Println("Error when posting anniversary reminder:", err)
 		return
@@ -79,11 +98,11 @@ func SlackAnniversaryChannelHandler(e Event, c *Config) {
 	log.Println("Sent anniversary info to channel for person", e.Person.SlackMemberID)
 }
 
-func SlackBirthdayReminderChannelHandler(e Event, c *Config) {
-	if err := SendSlackChannelMsg(
+func SlackBirthdayReminderChannelHandler(e Event, c *config.Config, sc SlackClient) {
+	if err := sc.SlackChannelMsgSender(
 		c.Slack.BirthdaysChannelReminder.ChannelName,
 		fmt.Sprintf(c.Slack.BirthdaysChannelReminder.MessageTemplate, e.Person.SlackMemberID),
-		c,
+		c.Slack.BotToken,
 	); err != nil {
 		log.Println("Error when posting birthday reminder:", err)
 		return
@@ -91,7 +110,7 @@ func SlackBirthdayReminderChannelHandler(e Event, c *Config) {
 	log.Println("Sent birthday reminder to channel", e.Person.SlackMemberID)
 }
 
-func SlackBirthdayReminderDirectMessageHandler(e Event, c *Config) {
+func SlackBirthdayReminderDirectMessageHandler(e Event, c *config.Config, sc SlackClient) {
 	var msg string
 	switch e.EventType {
 	case Birthday:
@@ -109,12 +128,12 @@ func SlackBirthdayReminderDirectMessageHandler(e Event, c *Config) {
 		return
 	}
 
-	if err := SendSlackDM(*e.Person.LeadSlackMemberID, msg, c); err != nil {
+	if err := sc.SlackDMSender(*e.Person.LeadSlackMemberID, msg, c.Slack.BotToken); err != nil {
 		log.Println("Error when sending DM remidner:", err)
 		return
 	}
 	for _, slack_member_id := range c.Slack.BirthdaysDirectMessageReminder.AlwaysNotifySlackIds {
-		if err := SendSlackDM(slack_member_id, msg, c); err != nil {
+		if err := sc.SlackDMSender(slack_member_id, msg, c.Slack.BotToken); err != nil {
 			log.Println("Error when sending DM remidner:", err)
 			return
 		}
@@ -122,15 +141,15 @@ func SlackBirthdayReminderDirectMessageHandler(e Event, c *Config) {
 	log.Println("Sent birthday reminder Slack DM to lead", e.Person.SlackMemberID)
 }
 
-func SlackBirthdayPersonalReminderHandler(e Event, c *Config) {
+func SlackBirthdayPersonalReminderHandler(e Event, c *config.Config, sc SlackClient) {
 	if e.Person.LeadSlackMemberID == nil {
 		return
 	}
-	if err := SetSlackPersonalReminder(
+	if err := sc.SlackPersonalReminderSetter(
 		*e.Person.LeadSlackMemberID,
 		c.Slack.BirthdaysPersonalReminder.Time,
 		fmt.Sprintf(c.Slack.BirthdaysPersonalReminder.MessageTemplate, e.Person.SlackMemberID),
-		c,
+		c.Slack.UserToken,
 	); err != nil {
 		log.Println("Error when posting Slack reminder:", err)
 		return
@@ -138,7 +157,7 @@ func SlackBirthdayPersonalReminderHandler(e Event, c *Config) {
 	log.Println("Set birthday Slack reminder for lead", *e.Person.LeadSlackMemberID)
 }
 
-func GetAnniversaryHandlers(c *Config) map[EventType][]EventHandler {
+func GetAnniversaryHandlers(c *config.Config) map[EventType][]EventHandler {
 	anniversaryHandlers := []EventHandler{}
 	if c.Slack.AnniversaryChannelReminder.Enabled {
 		anniversaryHandlers = append(anniversaryHandlers, SlackAnniversaryChannelHandler)
@@ -170,10 +189,10 @@ func IsTodayAnAnniversary(t time.Time) bool {
 }
 
 func GetTodaysEvents(
-	p Person,
+	p config.Person,
 	todaysEvents chan Event,
 	wg *sync.WaitGroup,
-	c *Config,
+	c *config.Config,
 ) {
 	defer wg.Done()
 	if IsTodayAnAnniversary(
