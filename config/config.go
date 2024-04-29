@@ -16,6 +16,12 @@ type Person struct {
 	LeadSlackMemberID *string   `mapstructure:"lead_slack_member_id" validate:"required"`
 }
 
+type MonthlyReport struct {
+	Enabled         bool   `mapstructure:"enabled"`
+	ChannelName     string `mapstructure:"channel_name" validate:"required"`
+	MessageTemplate string `mapstructure:"message_template" validate:"required"`
+}
+
 type DownloadingUsers struct {
 	BirthdayCustomFieldName string `mapstructure:"birthday_custom_field_name" validate:"required"`
 	JoinDateCustomFieldName string `mapstructure:"join_date_custom_field_name" validate:"required"`
@@ -54,6 +60,7 @@ type Slack struct {
 	BirthdaysChannelReminder       BirthdaysChannelReminder       `mapstructure:"birthdays_channel_reminder" validate:"required"`
 	BirthdaysPersonalReminder      BirthdaysPersonalReminder      `mapstructure:"birthdays_personal_reminder" validate:"required"`
 	BirthdaysDirectMessageReminder BirthdaysDirectMessageReminder `mapstructure:"birthdays_direct_message_reminder" validate:"required"`
+	MonthlyReport                  MonthlyReport                  `mapstructure:"monthly_report" validate:"required"`
 	DownloadingUsers               DownloadingUsers               `mapstructure:"downloading_users" validate:"required"`
 }
 

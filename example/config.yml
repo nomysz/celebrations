@@ -26,6 +26,18 @@ slack:
 
     always_notify_slack_ids: [ID01]
 
+  monthly_report:
+    enabled: true
+    channel_name: leads
+    message_template: |-
+      **Monthly celebrations report**
+
+      People having birthdays this month: %d
+      %s
+
+      People having anniversaries this month: %d
+      %s
+
   downloading_users:
     birthday_custom_field_name: "Xf..."
     join_date_custom_field_name: "Xf..."

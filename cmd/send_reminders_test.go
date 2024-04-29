@@ -11,9 +11,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func getOffsetNowDate(years int, months int, days int) time.Time {
+	return GetNow().AddDate(years, months, days)
+}
+
 func getTestConfig() *config.Config {
 	personWithTodaysBirthdayDateSlackID := "birthday-slack-id"
 	personWithTodaysAnniversaryDateSlackID := "anniversary-slack-id"
+	personWithThisMonthBirthdayDateSlackID := "monthly-report-birthday-slack-id"
+	personWithThisMonthAnniversaryDateSlackID := "monthly-report-anniversary-slack-id"
 	personWithAllDatesMoreThanMonthAgo := "more-than-month-ago-slack-id"
 	leaderSlackID := "leader-slack-id"
 	alwaysInformedLeaderSlackID := "leader-always-informed-slack-id"
@@ -47,6 +53,11 @@ func getTestConfig() *config.Config {
 					alwaysInformedLeaderSlackID,
 				},
 			},
+			MonthlyReport: config.MonthlyReport{
+				Enabled:         true,
+				ChannelName:     "leaders",
+				MessageTemplate: "Birthdays: %d\n%s\nAnniversaries: %d\n%s",
+			},
 			DownloadingUsers: config.DownloadingUsers{
 				BirthdayCustomFieldName: "dummy-birthdate-field-name",
 				JoinDateCustomFieldName: "dummy-joindate-field-name",
@@ -55,20 +66,32 @@ func getTestConfig() *config.Config {
 		People: []config.Person{
 			{
 				SlackMemberID:     personWithTodaysBirthdayDateSlackID,
-				BirthDate:         time.Now(),
-				JoinDate:          time.Now().AddDate(0, 0, -4),
+				BirthDate:         GetNow(),
+				JoinDate:          getOffsetNowDate(0, 0, +4),
 				LeadSlackMemberID: &leaderSlackID,
 			},
 			{
 				SlackMemberID:     personWithTodaysAnniversaryDateSlackID,
-				BirthDate:         time.Now().AddDate(0, 0, -6),
-				JoinDate:          time.Now().AddDate(-2, 0, 0),
+				BirthDate:         getOffsetNowDate(0, -3, 0),
+				JoinDate:          getOffsetNowDate(-2, 0, 0),
 				LeadSlackMemberID: &alwaysInformedLeaderSlackID,
 			},
 			{
+				SlackMemberID:     personWithThisMonthBirthdayDateSlackID,
+				BirthDate:         getOffsetNowDate(0, 0, +10),
+				JoinDate:          getOffsetNowDate(0, -1, 0),
+				LeadSlackMemberID: &leaderSlackID,
+			},
+			{
+				SlackMemberID:     personWithThisMonthAnniversaryDateSlackID,
+				BirthDate:         getOffsetNowDate(0, -2, 0),
+				JoinDate:          getOffsetNowDate(0, 0, +20),
+				LeadSlackMemberID: &leaderSlackID,
+			},
+			{
 				SlackMemberID:     personWithAllDatesMoreThanMonthAgo,
-				BirthDate:         time.Now().AddDate(0, -2, 0),
-				JoinDate:          time.Now().AddDate(0, -2, 0),
+				BirthDate:         getOffsetNowDate(0, 0, -40),
+				JoinDate:          getOffsetNowDate(0, -2, 0),
 				LeadSlackMemberID: &leaderSlackID,
 			},
 		},
@@ -77,6 +100,10 @@ func getTestConfig() *config.Config {
 
 func TestSendReminders(t *testing.T) {
 	log.SetOutput(io.Discard)
+
+	GetNow = func() time.Time {
+		return time.Date(2016, time.June, 1, 0, 0, 0, 0, time.UTC)
+	}
 
 	messages := []string{}
 
@@ -110,16 +137,25 @@ func TestSendReminders(t *testing.T) {
 	assert.NotEmpty(t, messages)
 
 	assert.Contains(t, messages,
-		"SENDING '<@birthday-slack-id> is having birthday!' TO CHANNEL 'leaders' USING TOKEN bot-token")
+		"SENDING '<@birthday-slack-id> is having birthday!' TO CHANNEL 'leaders' USING TOKEN bot-token",
+		"Missing birthday channel msg")
 
 	assert.Contains(t, messages,
-		"SETTING REMINDER '<@birthday-slack-id> is having birthday!' AT 'leader-slack-id' TO '15pm' USING TOKEN user-token")
+		"SETTING REMINDER '<@birthday-slack-id> is having birthday!' AT 'leader-slack-id' TO '15pm' USING TOKEN user-token",
+		"Missing personal reminder")
 
 	assert.Contains(t, messages,
-		"SENDING 'Happy anniversary <@anniversary-slack-id>! 2 years in Company!' TO CHANNEL 'celebrations' USING TOKEN bot-token")
+		"SENDING 'Happy anniversary <@anniversary-slack-id>! 2 years in Company!' TO CHANNEL 'celebrations' USING TOKEN bot-token",
+		"Missing anniversary channel msg")
 
 	assert.Contains(t, messages,
-		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-slack-id' USING TOKEN bot-token")
+		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-slack-id' USING TOKEN bot-token",
+		"Missing DM")
 	assert.Contains(t, messages,
-		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-always-informed-slack-id' USING TOKEN bot-token")
+		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-always-informed-slack-id' USING TOKEN bot-token",
+		"Missing DM")
+
+	assert.Contains(t, messages,
+		"SENDING 'Birthdays: 2\n<@birthday-slack-id> 2016-06-01\n<@monthly-report-birthday-slack-id> 2016-06-11\n\nAnniversaries: 3\n<@birthday-slack-id> 2016-06-05\n<@anniversary-slack-id> 2014-06-01\n<@monthly-report-anniversary-slack-id> 2016-06-21\n' TO CHANNEL 'leaders' USING TOKEN bot-token",
+		"Missing monthly report")
 }
