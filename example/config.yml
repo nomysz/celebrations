@@ -32,10 +32,10 @@ slack:
     message_template: |-
       **Monthly celebrations report**
 
-      People having birthdays this month: %d
+      People having birthdays this month:
       %s
 
-      People having anniversaries this month: %d
+      People having anniversaries this month:
       %s
 
   downloading_users:

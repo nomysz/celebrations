@@ -56,7 +56,7 @@ func getTestConfig() *config.Config {
 			MonthlyReport: config.MonthlyReport{
 				Enabled:         true,
 				ChannelName:     "leaders",
-				MessageTemplate: "Birthdays: %d\n%s\nAnniversaries: %d\n%s",
+				MessageTemplate: "Birthdays:\n%s\nAnniversaries:\n%s",
 			},
 			DownloadingUsers: config.DownloadingUsers{
 				BirthdayCustomFieldName: "dummy-birthdate-field-name",
@@ -156,6 +156,6 @@ func TestSendReminders(t *testing.T) {
 		"Missing DM")
 
 	assert.Contains(t, messages,
-		"SENDING 'Birthdays: 2\n<@birthday-slack-id> 2016-06-01\n<@monthly-report-birthday-slack-id> 2016-06-11\n\nAnniversaries: 3\n<@birthday-slack-id> 2016-06-05\n<@anniversary-slack-id> 2014-06-01\n<@monthly-report-anniversary-slack-id> 2016-06-21\n' TO CHANNEL 'leaders' USING TOKEN bot-token",
+		"SENDING 'Birthdays:\n<@birthday-slack-id> 2016-06-01\n<@monthly-report-birthday-slack-id> 2016-06-11\n\nAnniversaries:\n<@birthday-slack-id> 2016-06-05\n<@anniversary-slack-id> 2014-06-01\n<@monthly-report-anniversary-slack-id> 2016-06-21\n' TO CHANNEL 'leaders' USING TOKEN bot-token",
 		"Missing monthly report")
 }

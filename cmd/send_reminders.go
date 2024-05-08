@@ -188,9 +188,7 @@ func SlackMonthlyReportHandler(e Event, c *config.Config, sc SlackClient) {
 
 	monthlyReport := fmt.Sprintf(
 		c.Slack.MonthlyReport.MessageTemplate,
-		len(e.BirthdaysThisMonth),
 		textBirthdaysThisMonth,
-		len(e.AnniversariesThisMonth),
 		textAnniversariesThisMonth,
 	)
 	if err := sc.SlackChannelMsgSender(
