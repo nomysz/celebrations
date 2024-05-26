@@ -174,16 +174,30 @@ func GetEventHandlers(c *config.Config) map[EventType][]EventHandler {
 	}
 }
 
+func getYearsPassedToCurrentYear(birthday time.Time) int {
+	return GetNow().Year() - birthday.Year()
+}
+
 func SlackMonthlyReportHandler(e Event, c *config.Config, sc SlackClient) {
 	var textBirthdaysThisMonth,
 		textAnniversariesThisMonth string
 
 	for _, p := range e.BirthdaysThisMonth {
-		textBirthdaysThisMonth += fmt.Sprintf("<@%s> %s\n", p.SlackMemberID, p.BirthDate.Format(time.DateOnly))
+		textBirthdaysThisMonth += fmt.Sprintf(
+			"%s, <@%s> %d years old\n",
+			p.BirthDate.Format("2 January"),
+			p.SlackMemberID,
+			getYearsPassedToCurrentYear(p.BirthDate),
+		)
 	}
 
 	for _, p := range e.AnniversariesThisMonth {
-		textAnniversariesThisMonth += fmt.Sprintf("<@%s> %s\n", p.SlackMemberID, p.JoinDate.Format(time.DateOnly))
+		textAnniversariesThisMonth += fmt.Sprintf(
+			"%s, <@%s> %s in company\n",
+			p.JoinDate.Format("2 January"),
+			p.SlackMemberID,
+			getYearsText(p.JoinDate),
+		)
 	}
 
 	monthlyReport := fmt.Sprintf(
@@ -202,15 +216,23 @@ func SlackMonthlyReportHandler(e Event, c *config.Config, sc SlackClient) {
 	log.Println("Sent monthly report to channel", c.Slack.MonthlyReport.ChannelName)
 }
 
+func getYearsText(date time.Time) string {
+	yearsInCompany := getYearsPassedToCurrentYear(date)
+	if yearsInCompany > 1 {
+		return fmt.Sprintf("%d years", yearsInCompany)
+	}
+	return "1 year"
+}
+
 func SlackAnniversaryChannelHandler(e Event, c *config.Config, sc SlackClient) {
 	if e.Person == nil {
 		return
 	}
-	yearsInCompany := GetNow().Year() - e.Person.JoinDate.Year()
+
 	anniversaryWishes := fmt.Sprintf(
 		c.Slack.AnniversaryChannelReminder.MessageTemplate,
 		e.Person.SlackMemberID,
-		yearsInCompany,
+		getYearsText(e.Person.JoinDate),
 	)
 	if err := sc.SlackChannelMsgSender(
 		c.Slack.AnniversaryChannelReminder.ChannelName,

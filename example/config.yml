@@ -5,7 +5,7 @@ slack:
   anniversary_channel_reminder:
     enabled: true
     channel_name: celebrations
-    message_template: ":tada: :tada: Happy anniversary <@%s>! %d years in company! :tada: :tada:"
+    message_template: ":tada: :tada: Happy anniversary <@%s>! %s in company! :tada: :tada:"
 
   birthdays_channel_reminder:
     enabled: true
