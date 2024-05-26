@@ -22,7 +22,7 @@ slack:
     message_template: "<@%s> is having it's birthday today. Make sure to post some #celebrations!"
 
     pre_reminder_days_before: 7
-    pre_remidner_message_template: "<@%s> is having it's birthday in %s days!"
+    pre_remidner_message_template: "<@%s> is having it's birthday in %d days!"
 
     always_notify_slack_ids: [ID01]
 

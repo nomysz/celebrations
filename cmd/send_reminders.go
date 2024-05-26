@@ -113,7 +113,7 @@ func GetTodaysEventsForPerson(
 		defer close(ch)
 		if DayAndMonthMatch(
 			p.BirthDate.Add(
-				time.Hour * 24 * time.Duration(c.Slack.BirthdaysDirectMessageReminder.PreReminderDaysBefore),
+				-time.Hour * 24 * time.Duration(c.Slack.BirthdaysDirectMessageReminder.PreReminderDaysBefore),
 			),
 		) {
 			ch <- Event{
@@ -254,6 +254,7 @@ func SlackBirthdayReminderDirectMessageHandler(e Event, c *config.Config, sc Sla
 		msg = fmt.Sprintf(
 			c.Slack.BirthdaysDirectMessageReminder.PreRemidnerMessageTemplate,
 			e.Person.SlackMemberID,
+			c.Slack.BirthdaysDirectMessageReminder.PreReminderDaysBefore,
 		)
 	default:
 		log.Println("Error when sending DM remidner: Invalid EventType:", e.EventType)
