@@ -1,0 +1,50 @@
+slack:
+  anniversary_channel_reminder:
+    enabled: true
+    channel_name: celebrations
+    message_template: ":tada: :tada: Happy anniversary <@%s>! %s in company! :tada: :tada:"
+
+  birthdays_channel_reminder:
+    enabled: true
+    channel_name: leads
+    message_template: ":birthday: Birthday celebration reminder! <@%s> is having it's birthday today!"
+
+  birthdays_personal_reminder:
+    enabled: true
+    time: "3pm today"
+    message_template: "<@%s> is having it's birthday today. Make sure to post some #celebrations!"
+
+  birthdays_direct_message_reminder:
+    enabled: true
+    message_template: "<@%s> is having it's birthday today. Make sure to post some #celebrations!"
+
+    pre_reminder_days_before: 7
+    pre_remidner_message_template: "<@%s> is having it's birthday in %d days!"
+
+    always_notify_slack_ids: [ID01]
+
+  monthly_report:
+    enabled: true
+    channel_name: leads
+    message_template: |-
+      **Monthly celebrations report**
+
+      People having birthdays this month:
+      %s
+
+      People having anniversaries this month:
+      %s
+
+  downloading_users:
+    birthday_custom_field_name: "Xf..."
+    join_date_custom_field_name: "Xf..."
+
+people:
+  - slack_member_id: ID01
+    birth_date: 1980-01-24
+    join_date: 2022-10-14
+    lead_slack_member_id: ID03
+  - slack_member_id: ID02
+    birth_date: 1990-06-18
+    join_date: 2020-01-02
+    lead_slack_member_id: ID01

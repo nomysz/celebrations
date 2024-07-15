@@ -4,12 +4,23 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/nomysz/celebrations/config"
 	"github.com/stretchr/testify/assert"
 )
+
+// Returns true if lookup string was found as partial within input []strings
+func partialContains(strs []string, lookup string) bool {
+	for _, x := range strs {
+		if strings.Contains(x, lookup) {
+			return true
+		}
+	}
+	return false
+}
 
 func getOffsetNowDate(years int, months int, days int) time.Time {
 	return GetNow().AddDate(years, months, days)
@@ -155,7 +166,25 @@ func TestSendReminders(t *testing.T) {
 		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-always-informed-slack-id' USING TOKEN bot-token",
 		"Error in DM")
 
+	assert.True(t, partialContains(messages, "Birthdays:"), "Error in monthly report")
+	assert.True(t, partialContains(messages, "1 June, <@birthday-slack-id> 22 years old"),
+		"Error in monthly report")
+	assert.True(t, partialContains(messages, "11 June, <@monthly-report-birthday-slack-id> 30 years old"),
+		"Error in monthly report")
+	assert.True(t, partialContains(messages, "Anniversaries:"), "Error in monthly report")
+	assert.True(t, partialContains(messages, "5 June, <@birthday-slack-id> 5 years in company"),
+		"Error in monthly report")
+	assert.True(t, partialContains(messages, "1 June, <@anniversary-slack-id> 2 years in company"),
+		"Error in monthly report")
+	assert.True(t, partialContains(messages, "21 June, <@monthly-report-anniversary-slack-id> 1 year in company"),
+		"Error in monthly report")
+	assert.True(t, partialContains(messages, "TO CHANNEL 'leaders' USING TOKEN bot-token"),
+		"Error in monthly report")
+	assert.True(t, partialContains(messages, "1 June, <@birthday-slack-id> 22 years old\n11 June, <@monthly-report-birthday-slack-id> 30 years old"),
+		"Error in monthly report birthdays sorting")
+	assert.True(t, partialContains(messages, "1 June, <@anniversary-slack-id> 2 years in company\n5 June, <@birthday-slack-id> 5 years in company\n21 June, <@monthly-report-anniversary-slack-id> 1 year in company"),
+		"Error in monthly report anniversaries sorting")
 	assert.Contains(t, messages,
-		"SENDING 'Birthdays:\n1 June, <@birthday-slack-id> 22 years old\n11 June, <@monthly-report-birthday-slack-id> 30 years old\n\nAnniversaries:\n5 June, <@birthday-slack-id> 5 years in company\n1 June, <@anniversary-slack-id> 2 years in company\n21 June, <@monthly-report-anniversary-slack-id> 1 year in company\n' TO CHANNEL 'leaders' USING TOKEN bot-token",
+		"SENDING 'Birthdays:\n1 June, <@birthday-slack-id> 22 years old\n11 June, <@monthly-report-birthday-slack-id> 30 years old\n\nAnniversaries:\n1 June, <@anniversary-slack-id> 2 years in company\n5 June, <@birthday-slack-id> 5 years in company\n21 June, <@monthly-report-anniversary-slack-id> 1 year in company\n' TO CHANNEL 'leaders' USING TOKEN bot-token",
 		"Error in monthly report")
 }

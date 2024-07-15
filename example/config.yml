@@ -1,7 +1,4 @@
 slack:
-  bot_token: xoxb-
-  user_token: xoxp-
-
   anniversary_channel_reminder:
     enabled: true
     channel_name: celebrations

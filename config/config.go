@@ -54,8 +54,8 @@ type BirthdaysDirectMessageReminder struct {
 }
 
 type Slack struct {
-	BotToken                       string                         `mapstructure:"bot_token" validate:"required"`
-	UserToken                      string                         `mapstructure:"user_token" validate:"required"`
+	BotToken                       string
+	UserToken                      string
 	AnniversaryChannelReminder     AnniversaryChannelReminder     `mapstructure:"anniversary_channel_reminder" validate:"required"`
 	BirthdaysChannelReminder       BirthdaysChannelReminder       `mapstructure:"birthdays_channel_reminder" validate:"required"`
 	BirthdaysPersonalReminder      BirthdaysPersonalReminder      `mapstructure:"birthdays_personal_reminder" validate:"required"`
@@ -79,10 +79,17 @@ func GetConfig() *Config {
 	return &c
 }
 
-func InitConfig() {
-	viper.SetConfigName("config")
+func InitConfig(filename string) {
+	viper.SetConfigName(filename)
 	viper.AddConfigPath(".")
 	viper.SetConfigType("yml")
+
+	if err := viper.BindEnv("Slack.BotToken", "SLACK_BOT_TOKEN"); err != nil {
+		log.Fatalln("Error binding env vars:", err.Error())
+	}
+	if err := viper.BindEnv("Slack.UserToken", "SLACK_USER_TOKEN"); err != nil {
+		log.Fatalln("Error binding env vars:", err.Error())
+	}
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalln("Error reading config file:" + err.Error())
@@ -96,7 +103,21 @@ func InitConfig() {
 		log.Fatalln("Missing required config attributes:" + err.Error())
 	}
 
-	// For some reason it's not done properly by validator
+	features_requiring_bot_token_are_enabled := false ||
+		c.Slack.AnniversaryChannelReminder.Enabled ||
+		c.Slack.BirthdaysChannelReminder.Enabled ||
+		c.Slack.BirthdaysDirectMessageReminder.Enabled ||
+		c.Slack.MonthlyReport.Enabled
+
+	if features_requiring_bot_token_are_enabled && c.Slack.BotToken == "" {
+		log.Fatalln("Missing required environment variable: SLACK_BOT_TOKEN (required for enabled reminders)")
+	}
+
+	if c.Slack.BirthdaysPersonalReminder.Enabled && c.Slack.UserToken == "" {
+		log.Fatalln("Missing required environment variable: SLACK_USER_TOKEN (required for enabled reminders)")
+	}
+
+	// Validate people as for some reason it's not done properly by validator
 	for _, p := range c.People {
 		if p.SlackMemberID == "" {
 			log.Println(p.SlackMemberID)

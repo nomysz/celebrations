@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/nomysz/celebrations/config"
@@ -181,6 +182,20 @@ func getYearsPassedToCurrentYear(birthday time.Time) int {
 func SlackMonthlyReportHandler(e Event, c *config.Config, sc SlackClient) {
 	var textBirthdaysThisMonth,
 		textAnniversariesThisMonth string
+
+	sort.Slice(e.BirthdaysThisMonth, func(i, j int) bool {
+		if e.BirthdaysThisMonth[i].BirthDate.Month() == e.BirthdaysThisMonth[j].BirthDate.Month() {
+			return e.BirthdaysThisMonth[i].BirthDate.Day() < e.BirthdaysThisMonth[j].BirthDate.Day()
+		}
+		return e.BirthdaysThisMonth[i].BirthDate.Month() < e.BirthdaysThisMonth[j].BirthDate.Month()
+	})
+
+	sort.Slice(e.AnniversariesThisMonth, func(i, j int) bool {
+		if e.AnniversariesThisMonth[i].JoinDate.Month() == e.AnniversariesThisMonth[j].JoinDate.Month() {
+			return e.AnniversariesThisMonth[i].JoinDate.Day() < e.AnniversariesThisMonth[j].JoinDate.Day()
+		}
+		return e.AnniversariesThisMonth[i].JoinDate.Month() < e.AnniversariesThisMonth[j].JoinDate.Month()
+	})
 
 	for _, p := range e.BirthdaysThisMonth {
 		textBirthdaysThisMonth += fmt.Sprintf(
