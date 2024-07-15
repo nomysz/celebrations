@@ -11,9 +11,9 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 ## Installation
 
 1. Use `bin/celebrations-...` executable or complile current version to your system architecture.
-1. Copy `example/config.yml` to your app directory; modify according to your needs.
-1. Install app to desired **Slack** workspace.
-1. Required **Slack** permissions:
+2. Copy `example/config.yml` to your app directory; modify according to your needs.
+3. Install app to desired **Slack** workspace.
+4. Required **Slack** permissions:
 
    - bot token scopes:
 
@@ -33,12 +33,12 @@ Celebrations works based on birth date and anniversary dates along with Slack id
    - user token scopes:
      - `reminders:write` (adding reminders)
 
-1. To be able to post to private channel, add bot manually (**Channel** -> **Integrations** -> **Add App**).
-1. Optional. Use command `./celebrations download-users [--limit x]` to pre-download users from **Slack**. Helpful for populating `config.yml` file.
-1. Setup envronment variables for app runtime:
-- `SLACK_BOT_TOKEN=xoxb-...` (required for most reminders)
-- `SLACK_USER_TOKEN=xoxp-...` (required for setting personal remidners)
-1. Schedule running `./celebrations send-reminders` once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml) or other type of cron.
+5. To be able to post to private channel, add bot manually (**Channel** -> **Integrations** -> **Add App**).
+6. Optional. Use command `./celebrations download-users [--limit x]` to pre-download users from **Slack**. Helpful for populating `config.yml` file.
+7. Setup envronment variables for app runtime:
+  - `SLACK_BOT_TOKEN=xoxb-...` (required for most reminders)
+  - `SLACK_USER_TOKEN=xoxp-...` (required for setting personal remidners)
+8. Schedule running `./celebrations send-reminders` once a day on specified hour e.g. 9:30 am via [Github actions scheduler](example/.github/workflows/main.yml) or other type of cron.
 
 ## Development
 
@@ -62,7 +62,22 @@ make test
 
 ## Changelog
 
-[Changelog](Changelog.md)
+### 0.4.0
+
+- Add dates sorting to **Monthly Report** channel reminder
+- Move secrets from `config.yml` to ENV VARs
+
+### 0.3.0
+
+- Humanize **Monthly Report** channel reminder
+
+### 0.2.0
+
+- Add **Monthly Report** channel reminder
+
+### 0.1.0
+
+- Init
 
 ## License
 
