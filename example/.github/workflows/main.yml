@@ -12,3 +12,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Run
         run: ./celebrations send-reminders
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_USER_TOKEN: ${{ secrets.SLACK_USER_TOKEN }}
