@@ -49,8 +49,8 @@ func SendReminders(c *config.Config, sc SlackClient) {
 	}
 
 	for _, e := range todaysEvents {
-		for event_type, handlers := range GetEventHandlers(c) {
-			if e.EventType == event_type {
+		for handlerEventType, handlers := range GetEventHandlers(c) {
+			if e.EventType == handlerEventType {
 				for _, handler := range handlers {
 					handler(e, c, sc)
 				}
@@ -71,8 +71,8 @@ const (
 type Event struct {
 	EventType EventType
 
-	// split to separate structs
-	Person                 *config.Person
+	Person *config.Person
+
 	BirthdaysThisMonth     []config.Person
 	AnniversariesThisMonth []config.Person
 }
@@ -298,8 +298,8 @@ func SlackBirthdayReminderDirectMessageHandler(e Event, c *config.Config, sc Sla
 		log.Println("Error when sending DM remidner:", err)
 		return
 	}
-	for _, slack_member_id := range c.Slack.BirthdaysDirectMessageReminder.AlwaysNotifySlackIds {
-		if err := sc.SlackDMSender(slack_member_id, msg, c.Slack.BotToken); err != nil {
+	for _, slackMemberID := range c.Slack.BirthdaysDirectMessageReminder.AlwaysNotifySlackIds {
+		if err := sc.SlackDMSender(slackMemberID, msg, c.Slack.BotToken); err != nil {
 			log.Println("Error when sending DM remidner:", err)
 			return
 		}
