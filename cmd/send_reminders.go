@@ -27,14 +27,10 @@ var SendRemindersCmd = &cobra.Command{
 	},
 }
 
-type SlackChannelMsgSender func(channel string, msg string, botToken string) error
-type SlackDMSender func(slackId string, msg string, botToken string) error
-type SlackPersonalReminderSetter func(slackId string, time string, msg string, userToken string) error
-
 type SlackClient struct {
-	SlackChannelMsgSender
-	SlackDMSender
-	SlackPersonalReminderSetter
+	SlackChannelMsgSender       func(channel string, msg string, botToken string) error
+	SlackDMSender               func(slackId string, msg string, botToken string) error
+	SlackPersonalReminderSetter func(slackId string, time string, msg string, userToken string) error
 }
 
 func SendReminders(c *config.Config, sc SlackClient) {
