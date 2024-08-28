@@ -62,6 +62,10 @@ make test
 
 ## Changelog
 
+### 0.5.0
+
+- Refactor code for readability
+
 ### 0.4.0
 
 - Add dates sorting to **Monthly Report** channel reminder

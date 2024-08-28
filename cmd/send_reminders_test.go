@@ -109,6 +109,36 @@ func getTestConfig() *config.Config {
 	}
 }
 
+type TestSlackClient struct {
+	botToken  string
+	userToken string
+	messages  []string
+}
+
+func (sc *TestSlackClient) SendSlackChannelMsg(channel string, msg string) error {
+	sc.messages = append(
+		sc.messages,
+		fmt.Sprintf("SENDING '%s' TO CHANNEL '%s' USING TOKEN %s", msg, channel, sc.botToken),
+	)
+	return nil
+}
+
+func (sc *TestSlackClient) SendSlackDM(slackId string, msg string) error {
+	sc.messages = append(
+		sc.messages,
+		fmt.Sprintf("SENDING DM '%s' TO '%s' USING TOKEN %s", msg, slackId, sc.botToken),
+	)
+	return nil
+}
+
+func (sc *TestSlackClient) SetSlackPersonalReminder(slackId string, time string, msg string) error {
+	sc.messages = append(
+		sc.messages,
+		fmt.Sprintf("SETTING REMINDER '%s' AT '%s' TO '%s' USING TOKEN %s", msg, slackId, time, sc.userToken),
+	)
+	return nil
+}
+
 func TestSendReminders(t *testing.T) {
 	log.SetOutput(io.Discard)
 
@@ -116,75 +146,57 @@ func TestSendReminders(t *testing.T) {
 		return time.Date(2016, time.June, 1, 0, 0, 0, 0, time.UTC)
 	}
 
-	messages := []string{}
+	sc := TestSlackClient{
+		botToken:  getTestConfig().Slack.BotToken,
+		userToken: getTestConfig().Slack.UserToken,
+		messages:  []string{},
+	}
 
 	SendReminders(
 		getTestConfig(),
-		SlackClient{
-			SlackChannelMsgSender: func(channel string, msg string, botToken string) error {
-				messages = append(
-					messages,
-					fmt.Sprintf("SENDING '%s' TO CHANNEL '%s' USING TOKEN %s", msg, channel, botToken),
-				)
-				return nil
-			},
-			SlackDMSender: func(slackId string, msg string, botToken string) error {
-				messages = append(
-					messages,
-					fmt.Sprintf("SENDING DM '%s' TO '%s' USING TOKEN %s", msg, slackId, botToken),
-				)
-				return nil
-			},
-			SlackPersonalReminderSetter: func(slackId string, time string, msg string, userToken string) error {
-				messages = append(
-					messages,
-					fmt.Sprintf("SETTING REMINDER '%s' AT '%s' TO '%s' USING TOKEN %s", msg, slackId, time, userToken),
-				)
-				return nil
-			},
-		},
+		&sc,
 	)
 
-	assert.NotEmpty(t, messages)
+	assert.NotEmpty(t, sc.messages)
 
-	assert.Contains(t, messages,
+	assert.Contains(t, sc.messages,
 		"SENDING '<@birthday-slack-id> is having birthday!' TO CHANNEL 'leaders' USING TOKEN bot-token",
 		"Error in birthday channel msg")
 
-	assert.Contains(t, messages,
+	assert.Contains(t, sc.messages,
 		"SETTING REMINDER '<@birthday-slack-id> is having birthday!' AT 'leader-slack-id' TO '15pm' USING TOKEN user-token",
 		"Error in personal reminder")
 
-	assert.Contains(t, messages,
+	assert.Contains(t, sc.messages,
 		"SENDING 'Happy anniversary <@anniversary-slack-id>! 2 years in Company!' TO CHANNEL 'celebrations' USING TOKEN bot-token",
 		"Error in anniversary channel msg")
 
-	assert.Contains(t, messages,
+	assert.Contains(t, sc.messages,
 		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-slack-id' USING TOKEN bot-token",
 		"Error in DM")
-	assert.Contains(t, messages,
+	assert.Contains(t, sc.messages,
 		"SENDING DM '<@birthday-slack-id> is having birthday!' TO 'leader-always-informed-slack-id' USING TOKEN bot-token",
 		"Error in DM")
 
-	assert.True(t, partialContains(messages, "Birthdays:"), "Error in monthly report")
-	assert.True(t, partialContains(messages, "1 June, <@birthday-slack-id> 22 years old"),
+	assert.True(t, partialContains(sc.messages, "Birthdays:"), "Error in monthly report")
+	assert.True(t, partialContains(sc.messages, "1 June, <@birthday-slack-id> 22 years old"),
 		"Error in monthly report")
-	assert.True(t, partialContains(messages, "11 June, <@monthly-report-birthday-slack-id> 30 years old"),
+	assert.True(t, partialContains(sc.messages, "11 June, <@monthly-report-birthday-slack-id> 30 years old"),
 		"Error in monthly report")
-	assert.True(t, partialContains(messages, "Anniversaries:"), "Error in monthly report")
-	assert.True(t, partialContains(messages, "5 June, <@birthday-slack-id> 5 years in company"),
+	assert.True(t, partialContains(sc.messages, "Anniversaries:"), "Error in monthly report")
+	assert.True(t, partialContains(sc.messages, "5 June, <@birthday-slack-id> 5 years in company"),
 		"Error in monthly report")
-	assert.True(t, partialContains(messages, "1 June, <@anniversary-slack-id> 2 years in company"),
+	assert.True(t, partialContains(sc.messages, "1 June, <@anniversary-slack-id> 2 years in company"),
 		"Error in monthly report")
-	assert.True(t, partialContains(messages, "21 June, <@monthly-report-anniversary-slack-id> 1 year in company"),
+	assert.True(t, partialContains(sc.messages, "21 June, <@monthly-report-anniversary-slack-id> 1 year in company"),
 		"Error in monthly report")
-	assert.True(t, partialContains(messages, "TO CHANNEL 'leaders' USING TOKEN bot-token"),
+	assert.True(t, partialContains(sc.messages, "TO CHANNEL 'leaders' USING TOKEN bot-token"),
 		"Error in monthly report")
-	assert.True(t, partialContains(messages, "1 June, <@birthday-slack-id> 22 years old\n11 June, <@monthly-report-birthday-slack-id> 30 years old"),
+	assert.True(t, partialContains(sc.messages, "1 June, <@birthday-slack-id> 22 years old\n11 June, <@monthly-report-birthday-slack-id> 30 years old"),
 		"Error in monthly report birthdays sorting")
-	assert.True(t, partialContains(messages, "1 June, <@anniversary-slack-id> 2 years in company\n5 June, <@birthday-slack-id> 5 years in company\n21 June, <@monthly-report-anniversary-slack-id> 1 year in company"),
+	assert.True(t, partialContains(sc.messages, "1 June, <@anniversary-slack-id> 2 years in company\n5 June, <@birthday-slack-id> 5 years in company\n21 June, <@monthly-report-anniversary-slack-id> 1 year in company"),
 		"Error in monthly report anniversaries sorting")
-	assert.Contains(t, messages,
+	assert.Contains(t, sc.messages,
 		"SENDING 'Birthdays:\n1 June, <@birthday-slack-id> 22 years old\n11 June, <@monthly-report-birthday-slack-id> 30 years old\n\nAnniversaries:\n1 June, <@anniversary-slack-id> 2 years in company\n5 June, <@birthday-slack-id> 5 years in company\n21 June, <@monthly-report-anniversary-slack-id> 1 year in company\n' TO CHANNEL 'leaders' USING TOKEN bot-token",
 		"Error in monthly report")
 }
