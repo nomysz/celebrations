@@ -7,28 +7,28 @@ import (
 	"github.com/slack-go/slack"
 )
 
-type SlackClient struct {
+type Client struct {
 	botToken  string
 	userToken string
 }
 
-func NewSlackClient(botToken string, userToken string) *SlackClient {
-	return &SlackClient{
+func NewClient(botToken string, userToken string) *Client {
+	return &Client{
 		botToken:  botToken,
 		userToken: userToken,
 	}
 }
 
 type ChannelMessenger interface {
-	SendSlackChannelMsg(channel string, msg string) error
+	SendChannelMessage(channel string, msg string) error
 }
 
 type DirectMessenger interface {
-	SendSlackDM(slackId string, msg string) error
+	SendDirectMessage(slackId string, msg string) error
 }
 
 type PersonalReminderSetter interface {
-	SetSlackPersonalReminder(slackId string, time string, msg string) error
+	SetPersonalReminder(slackId string, time string, msg string) error
 }
 
 type SlackCommunicator interface {
@@ -37,7 +37,7 @@ type SlackCommunicator interface {
 	PersonalReminderSetter
 }
 
-func (sc *SlackClient) SendSlackChannelMsg(channel string, msg string) error {
+func (sc *Client) SendChannelMessage(channel string, msg string) error {
 	_, _, err := slack.New(sc.botToken).PostMessage(
 		channel,
 		slack.MsgOptionAttachments(
@@ -59,7 +59,7 @@ func (sc *SlackClient) SendSlackChannelMsg(channel string, msg string) error {
 	return nil
 }
 
-func (sc *SlackClient) SendSlackDM(slackId string, msg string) error {
+func (sc *Client) SendDirectMessage(slackId string, msg string) error {
 	api := slack.New(sc.botToken)
 
 	slack_ch, _, _, err := api.OpenConversation(
@@ -93,7 +93,7 @@ func (sc *SlackClient) SendSlackDM(slackId string, msg string) error {
 	return nil
 }
 
-func (sc *SlackClient) SetSlackPersonalReminder(slackId string, time string, msg string) error {
+func (sc *Client) SetPersonalReminder(slackId string, time string, msg string) error {
 	_, err := slack.New(sc.userToken).AddUserReminder(
 		slackId,
 		msg,

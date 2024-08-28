@@ -11,8 +11,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const filename = "people.yml"
+
 var (
-	filename      = "people.yml"
 	limit         int
 	DownloadUsers = &cobra.Command{
 		Use:   "download-users",

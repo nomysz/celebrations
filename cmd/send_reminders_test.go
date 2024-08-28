@@ -115,7 +115,7 @@ type TestSlackClient struct {
 	messages  []string
 }
 
-func (sc *TestSlackClient) SendSlackChannelMsg(channel string, msg string) error {
+func (sc *TestSlackClient) SendChannelMessage(channel string, msg string) error {
 	sc.messages = append(
 		sc.messages,
 		fmt.Sprintf("SENDING '%s' TO CHANNEL '%s' USING TOKEN %s", msg, channel, sc.botToken),
@@ -123,7 +123,7 @@ func (sc *TestSlackClient) SendSlackChannelMsg(channel string, msg string) error
 	return nil
 }
 
-func (sc *TestSlackClient) SendSlackDM(slackId string, msg string) error {
+func (sc *TestSlackClient) SendDirectMessage(slackId string, msg string) error {
 	sc.messages = append(
 		sc.messages,
 		fmt.Sprintf("SENDING DM '%s' TO '%s' USING TOKEN %s", msg, slackId, sc.botToken),
@@ -131,7 +131,7 @@ func (sc *TestSlackClient) SendSlackDM(slackId string, msg string) error {
 	return nil
 }
 
-func (sc *TestSlackClient) SetSlackPersonalReminder(slackId string, time string, msg string) error {
+func (sc *TestSlackClient) SetPersonalReminder(slackId string, time string, msg string) error {
 	sc.messages = append(
 		sc.messages,
 		fmt.Sprintf("SETTING REMINDER '%s' AT '%s' TO '%s' USING TOKEN %s", msg, slackId, time, sc.userToken),

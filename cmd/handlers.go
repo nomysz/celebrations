@@ -11,8 +11,7 @@ import (
 )
 
 func SlackMonthlyReportHandler(e MonthlyReportEvent, c *config.Config, s slack.ChannelMessenger) {
-	var textBirthdaysThisMonth,
-		textAnniversariesThisMonth string
+	var textBirthdays, textAnniversaries string
 
 	sort.Slice(e.Birthdays, func(i, j int) bool {
 		if e.Birthdays[i].BirthDate.Month() == e.Birthdays[j].BirthDate.Month() {
@@ -29,7 +28,7 @@ func SlackMonthlyReportHandler(e MonthlyReportEvent, c *config.Config, s slack.C
 	})
 
 	for _, p := range e.Birthdays {
-		textBirthdaysThisMonth += fmt.Sprintf(
+		textBirthdays += fmt.Sprintf(
 			"%s, <@%s> %d years old\n",
 			p.BirthDate.Format("2 January"),
 			p.SlackMemberID,
@@ -38,7 +37,7 @@ func SlackMonthlyReportHandler(e MonthlyReportEvent, c *config.Config, s slack.C
 	}
 
 	for _, p := range e.Anniversaries {
-		textAnniversariesThisMonth += fmt.Sprintf(
+		textAnniversaries += fmt.Sprintf(
 			"%s, <@%s> %s in company\n",
 			p.JoinDate.Format("2 January"),
 			p.SlackMemberID,
@@ -48,10 +47,10 @@ func SlackMonthlyReportHandler(e MonthlyReportEvent, c *config.Config, s slack.C
 
 	monthlyReport := fmt.Sprintf(
 		c.Slack.MonthlyReport.MessageTemplate,
-		textBirthdaysThisMonth,
-		textAnniversariesThisMonth,
+		textBirthdays,
+		textAnniversaries,
 	)
-	if err := s.SendSlackChannelMsg(
+	if err := s.SendChannelMessage(
 		c.Slack.MonthlyReport.ChannelName,
 		monthlyReport,
 	); err != nil {
@@ -74,15 +73,12 @@ func getYearsPassedToCurrentYear(birthday time.Time) int {
 }
 
 func SlackAnniversaryChannelHandler(e PersonalEvent, c *config.Config, s slack.ChannelMessenger) {
-	if e.Person == nil {
-		return
-	}
 	anniversaryWishes := fmt.Sprintf(
 		c.Slack.AnniversaryChannelReminder.MessageTemplate,
 		e.Person.SlackMemberID,
 		getYearsText(e.Person.JoinDate),
 	)
-	if err := s.SendSlackChannelMsg(
+	if err := s.SendChannelMessage(
 		c.Slack.AnniversaryChannelReminder.ChannelName,
 		anniversaryWishes,
 	); err != nil {
@@ -93,10 +89,7 @@ func SlackAnniversaryChannelHandler(e PersonalEvent, c *config.Config, s slack.C
 }
 
 func SlackBirthdayReminderChannelHandler(e PersonalEvent, c *config.Config, s slack.ChannelMessenger) {
-	if e.Person == nil {
-		return
-	}
-	if err := s.SendSlackChannelMsg(
+	if err := s.SendChannelMessage(
 		c.Slack.BirthdaysChannelReminder.ChannelName,
 		fmt.Sprintf(c.Slack.BirthdaysChannelReminder.MessageTemplate, e.Person.SlackMemberID),
 	); err != nil {
@@ -107,9 +100,6 @@ func SlackBirthdayReminderChannelHandler(e PersonalEvent, c *config.Config, s sl
 }
 
 func SlackBirthdayReminderDirectMessageHandler(e PersonalEvent, c *config.Config, s slack.DirectMessenger) {
-	if e.Person == nil {
-		return
-	}
 	var msg string
 	switch e.GetType() {
 	case Birthday:
@@ -128,12 +118,12 @@ func SlackBirthdayReminderDirectMessageHandler(e PersonalEvent, c *config.Config
 		return
 	}
 
-	if err := s.SendSlackDM(*e.Person.LeadSlackMemberID, msg); err != nil {
+	if err := s.SendDirectMessage(*e.Person.LeadSlackMemberID, msg); err != nil {
 		log.Println("Error when sending DM remidner:", err)
 		return
 	}
 	for _, slackMemberID := range c.Slack.BirthdaysDirectMessageReminder.AlwaysNotifySlackIds {
-		if err := s.SendSlackDM(slackMemberID, msg); err != nil {
+		if err := s.SendDirectMessage(slackMemberID, msg); err != nil {
 			log.Println("Error when sending DM remidner:", err)
 			return
 		}
@@ -142,13 +132,10 @@ func SlackBirthdayReminderDirectMessageHandler(e PersonalEvent, c *config.Config
 }
 
 func SlackBirthdayPersonalReminderHandler(e PersonalEvent, c *config.Config, s slack.PersonalReminderSetter) {
-	if e.Person == nil {
-		return
-	}
 	if e.Person.LeadSlackMemberID == nil {
 		return
 	}
-	if err := s.SetSlackPersonalReminder(
+	if err := s.SetPersonalReminder(
 		*e.Person.LeadSlackMemberID,
 		c.Slack.BirthdaysPersonalReminder.Time,
 		fmt.Sprintf(c.Slack.BirthdaysPersonalReminder.MessageTemplate, e.Person.SlackMemberID),

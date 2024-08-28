@@ -17,7 +17,7 @@ var SendRemindersCmd = &cobra.Command{
 		cfg := config.GetConfig()
 		SendReminders(
 			cfg,
-			slack.NewSlackClient(cfg.Slack.BotToken, cfg.Slack.UserToken),
+			slack.NewClient(cfg.Slack.BotToken, cfg.Slack.UserToken),
 		)
 	},
 }
@@ -37,7 +37,7 @@ type Event interface {
 
 type PersonalEvent struct {
 	Type   EventType
-	Person *config.Person
+	Person config.Person
 }
 
 func (e PersonalEvent) GetType() EventType {
@@ -137,19 +137,19 @@ func GetTodaysEventsForPerson(
 		) {
 			ch <- PersonalEvent{
 				Type:   UpcomingBirthday,
-				Person: &p,
+				Person: p,
 			}
 		}
 		if DayAndMonthMatch(p.BirthDate) {
 			ch <- PersonalEvent{
 				Type:   Birthday,
-				Person: &p,
+				Person: p,
 			}
 		}
 		if DayAndMonthMatch(p.JoinDate) {
 			ch <- PersonalEvent{
 				Type:   Anniversary,
-				Person: &p,
+				Person: p,
 			}
 		}
 	}()
