@@ -1,3 +1,7 @@
+[![Version](https://img.shields.io/badge/version-v0.5.0-green.svg)](https://github.com/nomysz/celebrations/releases)
+[![GoDoc](https://godoc.org/github.com/nomysz/celebrations?status.svg)](http://godoc.org/github.com/nomysz/celebrations)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nomysz/celebrations)](https://goreportcard.com/report/github.com/nomysz/celebrations)
+
 # Celebrations
 
 Facilitates celebrations by sending reminders via custimizable channels like:
