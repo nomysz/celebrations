@@ -12,9 +12,27 @@ Facilitates celebrations by sending reminders via custimizable channels like:
 
 Celebrations works based on birth date and anniversary dates along with Slack identifiers (see [example/config.yml](example/config.yml)).
 
+## How it works?
+
+* When executed with `./celebrations send-reminders` command *every 1st day of the month* **Monthly report** will be posted to configured leads channel:
+![Anniversary](./example/screenshots/monthly-report.png)
+
+* On birthday additional post may be configured to be sent to leads channel:
+![Channel reminder](./example/screenshots/channel-reminder.png)
+
+* For direct leads **Direct message** will be sent couple days earlier:
+![DM reminder](./example/screenshots/dm-pre-reminder.png)
+
+* Direct leads can also receive extra personal **Reminder** set to given hour:
+![Reminder](./example/screenshots/reminder.png)
+
+* When enabled anniversaries, bot will publish anniversary celebrations as well:
+![Anniversary](./example/screenshots/anniversary.png)
+
+
 ## Installation
 
-1. Use `bin/celebrations-...` executable or complile current version to your system architecture.
+1. Use `bin/celebrations-...` executable or complile (see [Development](#development)) current version to your system architecture.
 2. Copy `example/config.yml` to your app directory; modify according to your needs.
 3. Install app to desired **Slack** workspace.
 4. Required **Slack** permissions:
@@ -49,7 +67,7 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 ### Run
 
 ```bash
-make run
+make run # or directly via binary
 ```
 
 ### Build

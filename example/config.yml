@@ -2,7 +2,7 @@ slack:
   anniversary_channel_reminder:
     enabled: true
     channel_name: celebrations
-    message_template: ":tada: :tada: Happy anniversary <@%s>! %s in company! :tada: :tada:"
+    message_template: ":tada: :tada: Happy anniversary <@%s>! %s years in company! :tada: :tada:"
 
   birthdays_channel_reminder:
     enabled: true
@@ -27,7 +27,7 @@ slack:
     enabled: true
     channel_name: leads
     message_template: |-
-      **Monthly celebrations report**
+      *Monthly celebrations report*
 
       People having birthdays this month:
       %s
