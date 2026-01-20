@@ -14,20 +14,21 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 
 ## How it works?
 
-* When executed with `./celebrations send-reminders` command *every 1st day of the month* **Monthly report** will be posted to configured leads channel:
-<img src="./example/screenshots/monthly-report.png" alt="Monthly report" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
+* All reminders may be customized (or disabled)
+* When executed with `./celebrations send-reminders` command (if today is the 1st day of the month) **Monthly report** will be posted to leads channel:
+<img src="./example/screenshots/monthly-report.png" alt="Monthly report" style="width: 50% !important;">
 
-* On birthday additional post may be configured to be sent to leads channel:
-<img src="./example/screenshots/channel-reminder.png" alt="Channel reminder" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
+* On birthday additional post will be sent to leads channel:
+<img src="./example/screenshots/channel-reminder.png" alt="Channel reminder" style="width: 50% !important;">
 
-* For direct leads **Direct message** will be sent couple days earlier:
-<img src="./example/screenshots/dm-pre-reminder.png" alt="DM reminder" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
+* Direct leads will recieve **Direct message** reminder couple days earlier:
+<img src="./example/screenshots/dm-pre-reminder.png" alt="DM reminder" style="width: 50% !important;">
 
-* Direct leads can also receive extra personal **Reminder** set to given hour:
-<img src="./example/screenshots/peronal-reminder.png" alt="Personal reminder" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
+* Direct leads will also receive personal **Reminder** set to given hour on birthday:
+<img src="./example/screenshots/personal-reminder.png" alt="Personal reminder" style="width: 50% !important;">
 
-* When enabled anniversaries, bot will publish anniversary celebrations as well:
-<img src="./example/screenshots/anniversary.png" alt="Anniversary" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
+* Anniversary celebrations will be published on specified open channel:
+<img src="./example/screenshots/anniversary.png" alt="Anniversary" style="width: 50% !important;">
 
 
 ## Installation
