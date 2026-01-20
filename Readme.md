@@ -15,7 +15,7 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 ## How it works?
 
 * When executed with `./celebrations send-reminders` command *every 1st day of the month* **Monthly report** will be posted to configured leads channel:
-![Anniversary](./example/screenshots/monthly-report.png)
+<img src="./example/screenshots/monthly-report.png" alt="Monthly report" style="width: 50% !important;">
 
 * On birthday additional post may be configured to be sent to leads channel:
 ![Channel reminder](./example/screenshots/channel-reminder.png)
