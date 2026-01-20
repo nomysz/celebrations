@@ -15,19 +15,19 @@ Celebrations works based on birth date and anniversary dates along with Slack id
 ## How it works?
 
 * When executed with `./celebrations send-reminders` command *every 1st day of the month* **Monthly report** will be posted to configured leads channel:
-<img src="./example/screenshots/monthly-report.png" alt="Monthly report" style="width: 50% !important;">
+<img src="./example/screenshots/monthly-report.png" alt="Monthly report" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
 
 * On birthday additional post may be configured to be sent to leads channel:
-![Channel reminder](./example/screenshots/channel-reminder.png)
+<img src="./example/screenshots/channel-reminder.png" alt="Channel reminder" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
 
 * For direct leads **Direct message** will be sent couple days earlier:
-![DM reminder](./example/screenshots/dm-pre-reminder.png)
+<img src="./example/screenshots/dm-pre-reminder.png" alt="DM reminder" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
 
 * Direct leads can also receive extra personal **Reminder** set to given hour:
-![Reminder](./example/screenshots/reminder.png)
+<img src="./example/screenshots/peronal-reminder.png" alt="Personal reminder" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
 
 * When enabled anniversaries, bot will publish anniversary celebrations as well:
-![Anniversary](./example/screenshots/anniversary.png)
+<img src="./example/screenshots/anniversary.png" alt="Anniversary" style="width: 50% !important; box-shadow: 0px 0px 4px 0px #eee;">
 
 
 ## Installation
